@@ -10,18 +10,29 @@
             const BOARD_Y = 50;
             const BOARD_P1_X = 300;
             const BOARD_P2_X = 500;
-            //Paddle const
+            //Paddles const
             const PADDLE_WIDTH = 20;
             const PADDLE_HEIGHT = 100;
             const PADDLE_P1_X = 10;
             const PADDLE_P2_X = 770;
             const PADDLE_START_Y = (CANVAS_HEIGHT - PADDLE_HEIGHT) / 2;
+            //Paddles variables
+            let p1PaddleY = PADDLE_START_Y;
+            let p2PaddleY = PADDLE_START_Y;
             //Ball const
             const BALL_R = 15;
             const BALL_START_X = CANVAS_WIDTH / 2;
             const BALL_START_Y = CANVAS_HEIGHT / 2;
             const BALL_START_DX = 4.5;
             const BALL_START_DY = 1.5;
+            //Ball variables
+            let ballX = BALL_START_X;
+            let ballY = BALL_START_Y;
+            let ballDX = BALL_START_DX;
+            let ballDY = BALL_START_DY;
+            //Points variables
+            let p1Points = 0;
+            let p2Points = 0;
             //Canvas config
             const canvas = document.getElementById("gameCanvas");
             const ctx = canvas.getContext("2d");
@@ -41,6 +52,10 @@
                 ctx.arc(x, y, r, 0, Math.PI*2, true);
                 ctx.closePath();
                 ctx.fill();
+            }
+            function drawState() {
+                clearCanvas();
+                drawPo
             }
 
             drawText("3",300,50);
