@@ -10,6 +10,19 @@
             ctx.font = "30px Arial";
 
             const STATE_CHANGE_INTERVAL = 20;
+            let paused = false;
+
+            const P1_UP_BUTTON = 'KeyW';
+            const P1_DOWN_BUTTON = 'KeyS';
+            const P2_UP_BUTTON = 'KeyP';
+            const P2_DOWN_BUTTON = 'KeyL';
+            const PAUSE_BUTTON = 'KeyB';
+
+            const UP_ACTION = "up";
+            const DOWN_ACTION = "down";
+            const STOP_ACTION = "stop";
+            let p1Action = STOP_ACTION;
+            let p2Action = STOP_ACTION; 
 
             //Canvas const
             const CANVAS_HEIGHT = canvas.height;
@@ -21,7 +34,8 @@
             const BOARD_Y = 50;
             const BOARD_P1_X = 300;
             const BOARD_P2_X = 500;
-
+            
+            const PADDLE_STEP = 3;
             const PADDLE_WIDTH = 20;
             const PADDLE_HEIGHT = 100;
             const PADDLE_P1_X = 10;
@@ -39,6 +53,16 @@
             let ballY = BALL_START_Y;
             let ballDX = BALL_START_DX;
             let ballDY = BALL_START_DY;
+
+            function coerceIn(value, min, max){
+                if (value <= min) {
+                    return min;
+                } else if (value >= max) {
+                    return max;
+                } else {
+                    return value;
+                }
+            }
 
             function drawPaddle(x, y) {
                 ctx.fillRect(x,y,PADDLE_WIDTH,PADDLE_HEIGHT);
@@ -63,6 +87,60 @@
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
             }
 
+            window.addEventListener('keydown', function(event) {
+                const CODE = event.code;
+                if (CODE === P1_UP_BUTTON){
+                    p1Action = UP_ACTION;
+                } else if (CODE === P1_DOWN_BUTTON){
+                    p1Action=DOWN_ACTION;
+                } else if (CODE === P2_UP_BUTTON){
+                    p2Action = UP_ACTION;
+                } else if (CODE === P2_DOWN_BUTTON){
+                    p2Action = DOWN_ACTION;
+                }
+                if (CODE === PAUSE_BUTTON) {
+                    paused = !paused;
+                }
+            })
+
+            window.addEventListener('keyup', function (event){
+                const code = event.code;
+                if (code === P1_UP_BUTTON && p1Action === UP_ACTION) {
+                    p1Action = STOP_ACTION;
+                } else if (code === P1_DOWN_BUTTON && p1Action === DOWN_ACTION) {
+                    p1Action = STOP_ACTION;
+                } else if (code === P2_UP_BUTTON && p2Action === UP_ACTION) {
+                    p2Action = STOP_ACTION;
+                } else if (code === P2_DOWN_BUTTON && p2Action === DOWN_ACTION) {
+                    p2Action = STOP_ACTION;
+                }
+            })
+
+            function coercePaddle(paddleY) {
+                const MIN_PADDLE_Y = 0;
+                const MAX_PADDLE_Y = CANVAS_HEIGHT - PADDLE_HEIGHT;
+                return coerceIn(paddleY, MIN_PADDLE_Y, MAX_PADDLE_Y);
+            }
+
+            function movePaddles() {
+                if (p1Action === UP_ACTION) {
+                    p1PaddleY = coercePaddle(p1PaddleY - PADDLE_STEP);
+                } else if (p1Action === DOWN_ACTION) {
+                    p1PaddleY = coercePaddle(p1PaddleY + PADDLE_STEP);
+                }
+                if (p2Action === UP_ACTION) {
+                    p2PaddleY = coercePaddle(p2PaddleY - PADDLE_STEP);
+                } else if (p2Action === DOWN_ACTION) {
+                    p2PaddleY = coercePaddle(p2PaddleY + PADDLE_STEP);
+                }
+            }
+
+            function updateState() {
+                movePaddles();
+                ballX += ballDX;
+                ballY += ballDY;
+            }
+            
             function drawState() {
                 clearCanvas();
                 drawPoints(p1Points.toString(), BOARD_P1_X);
@@ -72,44 +150,14 @@
                 drawPaddle(PADDLE_P2_X, p2PaddleY);
             }
 
-            function updateState() {
-                /*if (p1Action === UP_ACTION){
-                    p1PaddleY -= PADDLE_STEP;
-                } else if (p1Action === DOWN_ACTION){
-                    p1PaddleY += PADDLE_STEP;
-                }
-                if (p2Action === UP_ACTION){
-                    p2PaddleY -= PADDLE_STEP;
-                } else if (p2Action === DOWN_ACTION){
-                    p2PaddleY += PADDLE_STEP;
-                }
-                movePaddles();*/
-                ballX += ballDX;
-                ballY += ballDY;
-                p1PaddleY++;
-                p2PaddleY--;
-                p1Points++;
-                p2Points += 3;
-            }
-
             function updateAndDrawState() {
-                updateState();
-                drawState();
+                if (!paused) {
+                    updateState();
+                    drawState();
+                }
             }
 
-            setInterval(updateAndDrawState, STATE_CHANGE_INTERVAL);
-
-
-            /*drawState();
-            updateState();
-            drawState();
-
-            drawPoints("3",300);
-            drawPoints("6",500);
-            drawPaddle(770,100);
-            drawPaddle(10,300);
-            drawBall(400, 250);*/
-            
+            setInterval(updateAndDrawState, STATE_CHANGE_INTERVAL); 
         </script>
     </body>
 </html>
